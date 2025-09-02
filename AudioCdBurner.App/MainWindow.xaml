@@ -1,0 +1,13 @@
+﻿<Window x:Class="AudioCdBurner.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Audio-CD Burner" Width="700" Height="450">
+    <DockPanel Margin="12">
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
+            <Button Name="AddFilesBtn" Width="120" Height="32" Click="AddFilesBtn_Click">Tilføj filer</Button>
+            <TextBlock Name="CountText" Margin="12,0,0,0" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <ListBox Name="FilesList"/>
+    </DockPanel>
+</Window>
