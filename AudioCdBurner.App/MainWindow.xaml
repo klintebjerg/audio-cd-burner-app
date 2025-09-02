@@ -4,10 +4,22 @@
         Title="Audio-CD Burner" Width="700" Height="450">
     <DockPanel Margin="12">
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
-            <Button Name="AddFilesBtn" Width="120" Height="32" Click="AddFilesBtn_Click">Tilføj filer</Button>
+            <Button Name="AddFilesBtn" Width="120" Height="32" Click="AddFilesBtn_Click">Add files</Button>
             <TextBlock Name="CountText" Margin="12,0,0,0" VerticalAlignment="Center"/>
+            <Button Name="TranscodeBtn" Width="120" Height="32" Margin="12,0,0,0" Click="TranscodeBtn_Click">Transcode files</Button>
         </StackPanel>
 
-        <ListBox Name="FilesList"/>
+        <ListView Name="FilesList">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Title" DisplayMemberBinding="{Binding Title}"/>
+                    <GridViewColumn Header="Artist" DisplayMemberBinding="{Binding Artist}"/>
+                    <GridViewColumn Header="Album" DisplayMemberBinding="{Binding Album}"/>
+                    <GridViewColumn Header="Duration" DisplayMemberBinding="{Binding Duration, StringFormat={}{0:mm\\:ss}}"/>
+                    <GridViewColumn Header="Path" DisplayMemberBinding="{Binding Path}"/>
+                    <GridViewColumn Header="BitrateKbps" DisplayMemberBinding="{Binding BitrateKbps}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
     </DockPanel>
 </Window>
