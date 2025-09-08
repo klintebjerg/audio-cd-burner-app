@@ -5,12 +5,22 @@ using System.Windows.Shapes;
 using TagLib;
 using NAudio.Wave;
 using NAudio.MediaFoundation;
+using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
+using System.Windows.Threading;
 
 namespace AudioCdBurner.App
 {
     public partial class MainWindow : Window
     {
-        public MainWindow() => InitializeComponent();
+        public ObservableCollection<Track> Tracks { get; } = new();
+
+        public MainWindow()
+        {
+            InitializeComponent();
+            DataContext = this;
+        }
+        
 
         private void AddFilesBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -33,33 +43,72 @@ namespace AudioCdBurner.App
                         Duration = file.Properties.Duration,
                         BitrateKbps = file.Properties.AudioBitrate
                     };
-                    FilesList.Items.Add(track);
+                    Tracks.Add(track);
                 }
             }
         }
 
-        private void TranscodeBtn_Click(object sender, RoutedEventArgs e)
+        private async void TranscodeBtn_Click(object sender, RoutedEventArgs e)
         {
-            foreach (Track track in FilesList.Items)
+            TranscodeBtn.IsEnabled = false;
+
+            var items = Tracks.ToList();
+
+            try
             {
-               try
-               {
-                   using (var reader = new NAudio.Wave.Mp3FileReader(track.Path))
-                   {
-                       track.IsMp3 = true;
-                       track.Duration = reader.TotalTime;
-                       track.SampleRateHz = reader.WaveFormat.SampleRate;
-                       track.Channels = reader.WaveFormat.Channels;
-                   }
-               }
-               catch
-               {
-                   track.IsMp3 = false;
-                   track.AudioNote = "Not an MP3 file";
-               } 
-               
-               
+                await Task.Run(() =>
+                {
+                    foreach (Track track in Tracks)
+                    {
+                        try
+                        {
+                            using (var reader = CreateReader(track.Path))
+                            {
+                                var duration = reader.TotalTime;
+                                var sr = reader.WaveFormat.SampleRate;
+                                var ch = reader.WaveFormat.Channels;
+                                var isMp3 = System.IO.Path.GetExtension(track.Path)
+                                    .Equals(".mp3", StringComparison.OrdinalIgnoreCase);
+
+                                Dispatcher.Invoke(() =>
+                                {
+                                    track.Duration = duration;
+                                    track.SampleRateHz = sr; // <- UI-tråd
+                                    track.Channels = ch; // <- UI-tråd
+                                    track.IsMp3 = isMp3;
+                                    track.AudioNote = $"sr={sr}, ch={ch} (UI set)";
+                                });
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                track.IsMp3 = false;
+                                track.AudioNote = "Kunne ikke åbne " + ex.Message;
+                            });
+                        }
+                    }
+                });
             }
+            finally
+            {
+                TranscodeBtn.IsEnabled = true;
+            }
+        }
+
+        private WaveStream CreateReader(string path)
+        {
+            string ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
+            if (ext == ".mp3") return new Mp3FileReader(path);
+            if (ext == ".wav") return new WaveFileReader(path);
+            return new MediaFoundationReader(path);
+        }
+
+        private void RemoveBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var toRemove = FilesList.SelectedItems.Cast<Track>().ToList();
+            foreach (var t in toRemove) Tracks.Remove(t);
         }
     }
 }
