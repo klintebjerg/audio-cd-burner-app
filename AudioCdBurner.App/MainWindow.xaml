@@ -1,16 +1,14 @@
-﻿<Window x:Class="AudioCdBurner.App.MainWindow"
+﻿ <Window x:Class="AudioCdBurner.App.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Audio-CD Burner" Width="700" Height="450">
+        Title="Audio-CD Burner" Width="1280" Height="600">
     <DockPanel Margin="12">
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
             <StackPanel Orientation="Vertical">
                 <Button Name="AddFilesBtn" Width="120" Height="32" Margin="12, 5 5 5" Click="AddFilesBtn_Click">Add files</Button>
                 <Button Name="RemoveBtn" Width="120" Height="32" Margin="12,5,5,5" Click="RemoveBtn_Click">Remove selected</Button>
             </StackPanel>
-            <Button Name="TranscodeBtn" Width="120" Height="32" Margin="12,0,0,0" Click="TranscodeBtn_Click">Transcode files</Button>
-            <Button Name="DetectBtn" Width="120" Height="32" Margin="12,0,0,0" Click="DetectBtn_Click">Detect audio</Button>
-            <Button Name="ValidateBtn" Width="120" Height="32" Margin="12,0,0,0" Click="ValidateBtn_OnClick">Validate Recorder</Button>
+            <Button Name="CheckEverythingBtn" Width="120" Height="32" Margin="12,0,0,0" Click="CheckEverythingBtn_Click">Check everything</Button>
         </StackPanel>
 
         <ListView Name="FilesList" ItemsSource="{Binding Tracks}" SelectionMode="Extended">
